@@ -34,7 +34,7 @@ The Flask Blog Project serves as an exemplary implementation of a modern and fea
 ![415076627_330492526494959_8595251690420360352_n](https://github.com/BacemDallel/Flask-Blog-Project/assets/111270554/c005db8f-cf48-4306-ae53-d0922e573b4b)
 
 
-![414730463_1486956335207281_5211314589711296242_n](https://github.com/BacemDallel/Flask-Blog-Project/assets/111270554/8d8cd5b4-973a-4f27-86a1-ad5dea10f8af)
+![414730463_1486956335207281_5211314589711296242_n](https://github.com/BacemDallel/Flask-Blog-Project/assets/111270554/fe5d480a-d291-435b-a775-94565252a617)
 
 
 
