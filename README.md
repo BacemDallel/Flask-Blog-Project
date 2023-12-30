@@ -27,3 +27,12 @@ Deployment and Usage:
 To deploy the application, ensure the necessary dependencies are installed and configure the database connection. The application runs locally, providing a responsive and intuitive interface for users to create, share, and engage with blog content.
 
 The Flask Blog Project serves as an exemplary implementation of a modern and feature-rich blogging platform, offering a scalable foundation for further expansion and customization.
+
+
+![414738013_890119562520951_3935042586495520312_n](https://github.com/BacemDallel/Flask-Blog-Project/assets/111270554/9d23590b-db96-4a49-bbdf-a5efe3494c37)
+
+![415076627_330492526494959_8595251690420360352_n](https://github.com/BacemDallel/Flask-Blog-Project/assets/111270554/c005db8f-cf48-4306-ae53-d0922e573b4b)
+
+![414738013_890119562520951_3935042586495520312_n](https://github.com/BacemDallel/Flask-Blog-Project/assets/111270554/65c5d7ac-2d85-4627-a5b4-1a9a2e950ca8)
+
+
