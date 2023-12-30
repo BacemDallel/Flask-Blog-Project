@@ -1,34 +1,61 @@
-Project Title: Simple Blogging Website with Flask
+Flask Blog Project
+This project is a blog web application developed using Flask, SQLAlchemy, Flask-Login, Flask-WTF, and other related libraries. It allows users to register, create blog posts, leave comments, and perform various account-related functions.
 
-Description:
+Installation
+Clone this repository to your local machine using git clone https://github.com/your_username/Flask-Blog.git.
 
-This project is a simple blogging website developed using Flask, a Python-based web framework. It allows users to create, view, edit, and delete blog posts. The website utilizes SQLAlchemy for managing a SQLite database to store blog post information.
+Navigate into the project directory.
 
-Key Features:
+Set up a virtual environment:
 
-Create Posts: Users can create new blog posts by providing a title, subtitle, author name, an image URL, and the main content of the post using a rich text editor powered by CKEditor.
+bash
+Copy code
+# On Windows
+python -m venv venv
+# On macOS and Linux
+python3 -m venv venv
+Activate the virtual environment:
 
-View Posts: All existing blog posts are displayed on the homepage, showcasing the title, author, and creation date. Users can click on a post to view its full content.
+bash
+Copy code
+# On Windows
+venv\Scripts\activate
+# On macOS and Linux
+source venv/bin/activate
+Install the required packages:
 
-Edit Posts: Users can edit existing blog posts, modifying the title, subtitle, author, image URL, and content. The posts are edited using a similar form used for creating new posts.
+bash
+Copy code
+pip install -r requirements.txt
+Set up the database:
 
-Delete Posts: Posts can be deleted by users, removing them from the database.
+Modify the SQLALCHEMY_DATABASE_URI in app.py to your preferred database (SQLite, PostgreSQL, etc.).
 
-Technologies Used:
+Run the following commands:
 
-Flask: A lightweight web framework for Python used to build the web application.
+bash
+Copy code
+python
+from app import db
+db.create_all()
+exit()
+Usage
+Run the Flask application:
 
-SQLAlchemy: An ORM (Object-Relational Mapping) library for Python, employed for database management.
+bash
+Copy code
+python app.py
+Access the application in your browser at http://localhost:5000.
 
-Flask-WTF: Used for handling web forms and input validation.
+Features
+User Registration and Authentication: Users can register accounts and log in securely.
+Create and Edit Blog Posts: Authenticated users can create, edit, and delete their blog posts.
+Leave Comments: Users can leave comments on blog posts.
+User Profile: View individual user profiles and their authored posts.
+Change Password and Username: Users can change their account password and username.
+Reset Password: Users can reset their account password using the reset functionality.
+Contributing
+Contributions are welcome! Feel free to open issues and pull requests.
 
-Flask-CKEditor: Integrated for providing a rich text editor for creating and editing blog post content.
-
-Bootstrap5: A front-end framework utilized for creating responsive and visually appealing web pages.
-
-SQLite: A relational database management system employed to store blog post data.
-
-Usage:
-
-The application can be accessed through a web browser. Users can navigate to different sections of the site such as the homepage to view all posts, view individual posts, create new posts, edit existing posts, and delete posts.
-
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
