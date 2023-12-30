@@ -2,6 +2,8 @@ Flask Blog Project
 
 The Flask Blog Project is a robust web application designed to empower users with a comprehensive and interactive blogging experience. Built on the Flask framework, this project encapsulates a suite of functionalities that enable users to create, manage, and engage with blog content effortlessly.
 
+![Uploading 414746229_718005410274617_3931644802428464687_n.png…]()
+
 Key Features:
 
 User Authentication: The application boasts a secure user authentication system. Users can register accounts, log in securely, and maintain their profiles. Passwords are hashed and stored securely, ensuring data confidentiality.
