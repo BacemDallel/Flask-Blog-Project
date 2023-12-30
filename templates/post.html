@@ -1,0 +1,148 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% include "header.html" %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Page Header-->
+<header class="masthead" style="background-image: url('{{ post.img_url }}')">
+  <div class="container position-relative px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        <div class="post-heading">
+          <h1>{{ post.title }}</h1>
+          <h2 class="subheading">{{ post.subtitle }}</h2>
+          <span class="meta">Posted by <a href="{{ url_for('profile', profile_id=post.user_id) }}">{{ post.author }}</a> on {{ post.date }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Post Content -->
+<div class="col-lg-8 col-md-10 mx-auto">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-danger" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<article>
+  <div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        {{ post.body|safe }}
+
+        <!-- Edit and Delete post buttons with space between -->
+        {% if current_user.is_authenticated %}
+          {% if current_user.id == post.user_id or current_user.id == 1 %}
+            <div class="post-options">
+              <a class="btn btn-edit" href="{{ url_for('edit_post', post_id=post.id) }}">Edit Post</a>
+              <a class="btn btn-delete" href="{{ url_for('delete_post', post_id=post.id) }}" onclick="return confirm('Are you sure you want to delete this post?')">Delete Post</a>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="login-comment">
+            <p>Login to leave a comment</p>
+            <a href="{{ url_for('login') }}" class="btn btn-login">Login</a>
+            <span>or</span>
+            <a href="{{ url_for('register') }}" class="btn btn-register">Register</a>
+          </div>
+        {% endif %}
+
+        {% if current_user.is_authenticated %}
+          <!-- Render Comment form here -->
+          <div>
+
+            {{ render_form(form, novalidate=True) }}
+
+
+          </div>
+        {% endif %}
+
+{% if comments %}
+  <div class="comments-section">
+    {% for comment in comments %}
+    <div class="comment-box">
+        <div class="comment-container">
+
+
+            <!-- Other comment details -->
+            <div class="comment-header">
+                <a href="{{ url_for('profile', profile_id=comment.user_id) }}">
+                    <h2 class="comment-username">{{ comment.user.username }}</h2>
+                </a>
+                <span class="comment-time">{{ comment.created_on.strftime("%B %d, %Y") }}</span>
+                <!-- Delete button -->
+                {% if current_user.is_authenticated and (current_user.id == comment.user_id or current_user.id == 1) %}
+                    <form method="post" action="{{ url_for('delete_comment', comment_id=comment.id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- Comment body -->
+            <div class="comment-body">
+                {{ comment.body | safe }}
+            </div>
+          <div class="comment-votes">
+            <!-- Upvote form -->
+{% set is_liked = current_user.is_comment_liked(comment.id) if current_user.is_authenticated else False %}
+
+<form class="upvote-form" action="{{ url_for('vote_comment', comment_id=comment.id, vote_type='upvote') }}" method="post" data-comment-id="{{ comment.id }}" data-vote-type="upvote" style="display: inline;">
+    <button type="submit" class="btn btn-sm {% if is_liked %}btn-success{% else %}btn-outline-success{% endif %} upvote-btn">{{ comment.upvotes }} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+</svg></button>
+</form>
+
+        </div>
+    </div>
+      </div>
+{% endfor %}
+
+{% endif %}
+          <!-- This part will display if there are no comments -->
+{% if not comments %}
+  <div class="no-comments-message">
+    <p>No comments yet. Be the first to comment!</p>
+  </div>
+{% endif %}
+      </div>
+    </div>
+  </div>
+  </div>
+</article>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Event listener for upvote forms
+        $('.upvote-form').submit(function(event) {
+            event.preventDefault();
+
+            var commentId = $(this).data('comment-id');
+            var voteType = $(this).data('vote-type');
+            var form = $(this);
+
+            $.ajax({
+                type: 'POST',
+                url: '/vote-comment/' + commentId + '/' + voteType,
+                success: function(response) {
+                    // Upon successful upvote, reload the page
+                    location.reload();
+                },
+                error: function(error) {
+                    // Handle error if needed
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+
+
+{% include "footer.html" %}
