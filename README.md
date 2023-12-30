@@ -2,7 +2,7 @@ Flask Blog Project
 
 The Flask Blog Project is a robust web application designed to empower users with a comprehensive and interactive blogging experience. Built on the Flask framework, this project encapsulates a suite of functionalities that enable users to create, manage, and engage with blog content effortlessly.
 
-![Uploading 414746229_718005410274617_3931644802428464687_n.png…]()
+![414746229_718005410274617_3931644802428464687_n](https://github.com/BacemDallel/Flask-Blog-Project/assets/111270554/050414fe-246c-42d4-beaf-c4a24d3f0f48)
 
 Key Features:
 
