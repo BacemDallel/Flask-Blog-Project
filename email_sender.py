@@ -2,9 +2,9 @@ import smtplib
 
 class EmailSender:
     def __init__(self, email):
-        self.sender_email = 'bacemczech@gmail.com'
+        self.sender_email = 'YOUR EMAIL'
         self.receiver_email = email
-        self.password = 'scsq dbdv mhpb axgu'
+        self.password = 'YOUR EMAIL PROJECT PASSWORD'
 
     def send_email(self, token):
 
