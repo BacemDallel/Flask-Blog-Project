@@ -49,6 +49,7 @@ def load_user(user_id):
     return db.get_or_404(User, user_id)
 
 
+# Define the database models (BlogPost, User, Comment, Vote)
 # CONFIGURE TABLE
 class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -149,7 +150,6 @@ class CommentForm(FlaskForm):
 
 # TODO: Use Werkzeug to hash the user's password when creating a new user.
 @app.route('/register', methods=['GET', 'POST'])
-@app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -184,7 +184,7 @@ def register():
     return render_template("register.html", form=form)
 
 
-# TODO: Adding voting logic
+# TODO: Add voting logic
 @app.route('/vote-comment/<comment_id>/<vote_type>', methods=['POST'])
 @login_required
 def vote_comment(comment_id, vote_type):
@@ -223,7 +223,8 @@ def vote_comment(comment_id, vote_type):
     db.session.commit()
     return redirect(url_for('show_post', post_id=comment.post_id))
 
-
+# Make a login route logic
+# check for the user profile existing and password
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -361,7 +362,7 @@ def delete_post(post_id):
         flash("You don't have permission to delete this post.")
         return redirect(url_for('show_post', post_id=post_id))
 
-
+# Delete logic
 @app.route('/delete-comment/<comment_id>', methods=['GET', 'POST'])
 @login_required
 def delete_comment(comment_id):
@@ -376,19 +377,21 @@ def delete_comment(comment_id):
         # Redirect to the same post if permission is denied
         return redirect(url_for('show_post', post_id=comment_to_delete.post_id))
 
-
+# Logout route that deconect the user and redirect to home page.
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('get_all_posts'))
 
 
-
+# Define a form for changing the user's password
 class ChangePasswordForm(FlaskForm):
     current_password = StringField("Current Password", validators=[DataRequired()])
     new_password = StringField("New Password", validators=[DataRequired()])
     submit = SubmitField("Apply changes")
 
+
+# Define a form for changing the user's username
 class ChangeUsernameForm(FlaskForm):
     new_username = StringField('New Username', validators=[DataRequired()])
     submit = SubmitField('Change Username')
@@ -398,9 +401,11 @@ class ChangeUsernameForm(FlaskForm):
 @app.route('/settings/<setting>', methods=['GET', 'POST'])
 @login_required
 def settings(setting):
+    # Create instances of ChangePasswordForm and ChangeUsernameForm
     change_password_form = ChangePasswordForm()
     change_username_form = ChangeUsernameForm()
 
+    # Logic for changing password if 'Security' setting is selected
     if setting == 'Security' and change_password_form.validate_on_submit():
         # Fetch the user's profile
         user = User.query.get_or_404(current_user.id)
@@ -421,6 +426,7 @@ def settings(setting):
         else:
             flash('Incorrect current password. Please try again.', 'error')
 
+    # Logic for changing username if 'Account' setting is selected
     if setting == 'Account' and change_username_form.validate_on_submit():
         new_username = change_username_form.new_username.data
 
@@ -440,108 +446,124 @@ def settings(setting):
         else:
             flash('Username already exists. Please choose a different username.', 'error')
 
+    # Render the settings template with forms and setting information
     return render_template('settings.html', setting=setting, change_password_form=change_password_form,
                            change_username_form=change_username_form)
 
 
 
+# Define a form for reseting user's password if forgottent.
 class ResetPasswordForm(FlaskForm):
     email = StringField("Please enter your email to search for your account.", validators=[DataRequired()])
     submit = SubmitField("Search")
 
 
+class ResetPasswordForm(FlaskForm):
+    # Form field for entering the email to search for the user's account
+    email = StringField("Please enter your email to search for your account.", validators=[DataRequired()])
+    # Button to submit the email for password reset
+    submit = SubmitField("Search")
+
 @app.route('/reset-password/', methods=['GET', 'POST'])
 def reset_password():
+    # Create an instance of the ResetPasswordForm
     reset_form = ResetPasswordForm()
 
     if reset_form.validate_on_submit():
         email = reset_form.email.data
+        # Check if the entered email exists in the database
         user_email = User.query.filter_by(email=email).first()
 
         if user_email:
-            token = ''.join([str(random.randint(0, 9)) for _ in range(6)])  # Generate a random token
+            # Generate a random token for password reset
+            token = ''.join([str(random.randint(0, 9)) for _ in range(6)])
             email_sender = EmailSender(email)
 
-            # Send email with the generated token
+            # Send an email to the user with the generated token
             email_sent = email_sender.send_email(token)
 
             if email_sent:
-                # Email sent successfully
-                # Stores the token in the session for verification later
+                # Email sent successfully, store the token in the session for verification
                 session['reset_token'] = token
 
-                # Redirects to a page where users can enter the token received in their email
+                # Redirect to a page for entering the token received in the email
                 return redirect(url_for('enter_token', email=email))
             else:
                 # Failed to send email
                 flash('Failed to send email. Please try again.', 'error')
         else:
-            # Invalid email
+            # Invalid email entered
             flash('Invalid email!', 'error')
 
+    # Render the reset-password.html template with the reset_form
     return render_template('reset-password.html', reset_form=reset_form)
 
 
 
 class TokenForm(FlaskForm):
+    # Form field for entering the token code sent to the user's email
     token = StringField("Please enter the token code sent to your email:", validators=[DataRequired()])
+    # Button to submit the token
     submit = SubmitField("Submit")
-
-
 
 @app.route('/enter-token/<email>', methods=['GET', 'POST'])
 def enter_token(email):
-    token_form = TokenForm()  # Assuming you have a WTForms TokenForm to capture the token
+    token_form = TokenForm()  # Create an instance of the TokenForm
+
     if token_form.validate_on_submit():
         entered_token = token_form.token.data
-        # Check if the entered token matches the token sent to the user's email
-        # You'll need to retrieve the token associated with the provided email
-        # You can use a temporary storage (like Flask session) or a database to store this token
-
-        # For demonstration purposes, assume session-based verification
+        # Retrieve the expected token sent to the user's email for verification
         expected_token = session.get('reset_token')  # Retrieve the expected token from the session
-
 
         if entered_token == expected_token:
             # Token matches, proceed to reset password for the provided email
             return redirect(url_for('reset_password_process', email=email))
         else:
+            # Invalid token entered, redirect to enter the token again
             flash('Invalid token. Please try again.', 'error')
             return redirect(url_for('enter_token', email=email))
 
+    # Render the enter-token.html template with the token_form and email
     return render_template('enter-token.html', token_form=token_form, email=email)
+
+
 
 @app.route('/resend/<email>', methods=['GET', 'POST'])
 def resend_token(email):
-    token_form = TokenForm()  # Assuming you have a WTForms TokenForm to capture the token
+    token_form = TokenForm()  # Create an instance of the TokenForm to capture the token
 
     user_email = User.query.filter_by(email=email).first()
 
     if user_email:
-        token = ''.join([str(random.randint(0, 9)) for _ in range(6)])  # Generate a random token
+        # Generate a random token
+        token = ''.join([str(random.randint(0, 9)) for _ in range(6)])
         email_sender = EmailSender(email)
 
-        # Send email with the generated token
+        # Send an email with the generated token
         email_sent = email_sender.send_email(token)
 
         if email_sent:
-            # Email sent successfully
-            # Stores the token in the session for verification later
+            # Email sent successfully, store the token in the session for verification
             session['reset_token'] = token
 
-            # Redirects to a page where users can enter the token received in their email
+            # Redirect to a page where users can enter the token received in their email
             return redirect(url_for('enter_token', email=email))
         else:
             # Failed to send email
             flash('Failed to send email. Please try again.', 'error')
     else:
-        # Invalid email
+        # Invalid email entered
         flash('Invalid email!', 'error')
-        return render_template('enter-token.html', token_form=token_form, email=email)
+
+    # Render the enter-token.html template with the token_form and email
+    return render_template('enter-token.html', token_form=token_form, email=email)
+
 
 
 class ResetPasswordProcess(FlaskForm):
+    # Form field for entering the new password
     new_password = StringField("Enter your new password", validators=[DataRequired()])
+    # Button to submit the new password
     submit = SubmitField("Search")
 
 @app.route('/reset-password-process/<email>', methods=['GET', 'POST'])
@@ -550,25 +572,22 @@ def reset_password_process(email):
 
     if reset_password_form.validate_on_submit():
         # Retrieve the user based on the provided email
-        user_ = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-        if user_:
-            new_password_ = reset_password_form.new_password.data
-            hashed_password = generate_password_hash(new_password_, method='pbkdf2:sha256')
-            user_.password = hashed_password
+        if user:
+            new_password = reset_password_form.new_password.data
+            hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
+            user.password = hashed_password
             db.session.commit()
 
-
-
-            flash('Password rested successfully!', 'success')
-            return redirect(url_for('login'))  # Redirect to the login page
+            flash('Password reset successfully!', 'success')
+            return redirect(url_for('login'))  # Redirect to the login page after successful password reset
         else:
             flash('Invalid user!', 'error')
             return redirect(url_for('login'))  # Redirect to the login page or reset-password page
 
+    # Render the reset_password_process.html template with the reset_password_form
     return render_template('reset_password_process.html', reset_password_form=reset_password_form)
-
-
 
 
 
